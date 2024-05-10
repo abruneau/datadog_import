@@ -1,0 +1,46 @@
+package browser
+
+import (
+	"dynatrace_to_datadog/datadog"
+	"fmt"
+
+	"github.com/DataDog/datadog-api-client-go/v2/api/datadogV1"
+	"github.com/dynatrace-oss/terraform-provider-dynatrace/dynatrace/api/v1/config/synthetic/monitors/browser/settings/event"
+)
+
+func parseKeyStrokesType(evt *event.KeyStrokes) (params datadog.TextParams, variable string) {
+	if evt.TextValue != nil {
+		params.Value = *evt.TextValue
+	} else if evt.Credential != nil {
+		params.Value = fmt.Sprintf("{{ %s }}", evt.Credential.Field)
+		variable = evt.Credential.Field
+	}
+	params.Element.MultiLocator = parseLocators(evt.Target.Locators)
+	params.Element.UserLocator = getUserLocator(evt.Target.Locators)
+	if evt.Wait != nil && evt.Wait.Milliseconds != nil {
+		params.Delay = *evt.Wait.Milliseconds * 1000
+	}
+
+	return params, variable
+}
+
+func ParseKeyStrokesStep(evt *event.KeyStrokes) (step *datadogV1.SyntheticsStep, variable string) {
+	step = datadogV1.NewSyntheticsStep()
+	step.Name = &evt.Description
+	step.Type = datadogV1.SYNTHETICSSTEPTYPE_TYPE_TEXT.Ptr()
+
+	falseValue := false
+	trueValue := true
+	step.AllowFailure = &falseValue
+	step.IsCritical = &trueValue
+	step.NoScreenshot = &falseValue
+
+	if evt.Wait != nil && evt.Wait.TimeoutInMilliseconds != nil {
+		timeout := int64(*evt.Wait.TimeoutInMilliseconds) * 1000
+		step.Timeout = &timeout
+	}
+
+	step.Params, variable = parseKeyStrokesType(evt)
+
+	return step, variable
+}
