@@ -59,7 +59,9 @@ func getBrowserConfig(events event.Events, variables []string) (conf datadogV1.S
 
 func getBrowserVariables(variables []string) (syntheticsVariables []datadogV1.SyntheticsBrowserVariable) {
 	for _, v := range variables {
-		syntheticsVariables = append(syntheticsVariables, *datadogV1.NewSyntheticsBrowserVariable(v, datadogV1.SYNTHETICSBROWSERVARIABLETYPE_TEXT))
+		if v != "" {
+			syntheticsVariables = append(syntheticsVariables, *datadogV1.NewSyntheticsBrowserVariable(v, datadogV1.SYNTHETICSBROWSERVARIABLETYPE_TEXT))
+		}
 	}
 	return
 }
