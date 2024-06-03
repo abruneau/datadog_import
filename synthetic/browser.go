@@ -26,7 +26,7 @@ func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor, logger *log.Entry) 
 	var status = datadogV1.SYNTHETICSTESTPAUSESTATUS_PAUSED
 	test.Status = &status
 	test.Locations = append(test.Locations, "aws:eu-central-1")
-	test.Options.DeviceIds = append(test.Options.DeviceIds, "laptop_large")
+	test.Options.DeviceIds = getDevice(monitor)
 
 	test.Name = monitor.Name
 	frequency := int64(monitor.FrequencyMin * 60)
@@ -105,4 +105,15 @@ func getRequest(events event.Events) (req datadogV1.SyntheticsTestRequest, err e
 	method := "GET"
 	req.Method = &method
 	return req, nil
+}
+
+func getDevice(monitor *dynatrace.SyntheticMonitor) []datadogV1.SyntheticsDeviceID {
+	if *monitor.Script.Configuration.Device.Orientation == "portrait" {
+		return []datadogV1.SyntheticsDeviceID{
+			"mobile_small",
+		}
+	}
+	return []datadogV1.SyntheticsDeviceID{
+		"laptop_large",
+	}
 }
