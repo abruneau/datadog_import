@@ -3,6 +3,8 @@ package synthetic
 import (
 	"dynatrace_to_datadog/synthetic/browser"
 	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/DataDog/datadog-api-client-go/v2/api/datadogV1"
 	dynatrace "github.com/dynatrace-oss/terraform-provider-dynatrace/dynatrace/api/v1/config/synthetic/monitors/browser/settings"
@@ -39,7 +41,7 @@ func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor, logger *log.Entry) 
 		return nil
 	}
 
-	test.Config, err = getBrowserConfig(monitor.Script.Events, variables)
+	test.Config, err = getBrowserConfig(monitor, variables)
 	if err != nil {
 		logger.Error(err)
 		return nil
@@ -48,12 +50,13 @@ func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor, logger *log.Entry) 
 	return test
 }
 
-func getBrowserConfig(events event.Events, variables []string) (conf datadogV1.SyntheticsBrowserTestConfig, err error) {
-	conf.Request, err = getRequest(events)
+func getBrowserConfig(monitor *dynatrace.SyntheticMonitor, variables []string) (conf datadogV1.SyntheticsBrowserTestConfig, err error) {
+	conf.Request, err = getRequest(monitor)
 	if err != nil {
 		return conf, err
 	}
 	conf.Variables = getBrowserVariables(variables)
+	conf.SetCookie = getCookies(monitor)
 	return
 }
 
@@ -79,6 +82,8 @@ func getSteps(events event.Events) (steps []datadogV1.SyntheticsStep, variables 
 			variables = append(variables, variable)
 		} else if evt.GetType() == event.Types.Navigate {
 			steps = append(steps, *browser.ParseNavigateStep(evt.(*event.Navigate)))
+		} else if evt.GetType() == event.Types.Javascript {
+			steps = append(steps, *browser.ParseJavascriptStep(evt.(*event.Javascript)))
 		} else {
 			step := datadogV1.NewSyntheticsStep()
 			name := evt.GetDescription()
@@ -96,14 +101,15 @@ func getSteps(events event.Events) (steps []datadogV1.SyntheticsStep, variables 
 	return
 }
 
-func getRequest(events event.Events) (req datadogV1.SyntheticsTestRequest, err error) {
-	if len(events) == 0 {
+func getRequest(monitor *dynatrace.SyntheticMonitor) (req datadogV1.SyntheticsTestRequest, err error) {
+	if len(monitor.Script.Events) == 0 {
 		return req, fmt.Errorf("no step found")
 	}
-	ev := events[0].(*event.Navigate)
+	ev := monitor.Script.Events[0].(*event.Navigate)
 	req.Url = &ev.URL
 	method := "GET"
 	req.Method = &method
+	req.Headers = getHeaders(monitor)
 	return req, nil
 }
 
@@ -116,4 +122,27 @@ func getDevice(monitor *dynatrace.SyntheticMonitor) []datadogV1.SyntheticsDevice
 	return []datadogV1.SyntheticsDeviceID{
 		"laptop_large",
 	}
+}
+
+func getHeaders(monitor *dynatrace.SyntheticMonitor) map[string]string {
+	var headers = map[string]string{}
+	for _, h := range monitor.Script.Configuration.RequestHeaders.Headers {
+		headers[h.Name] = h.Value
+	}
+	return headers
+}
+
+func getCookies(monitor *dynatrace.SyntheticMonitor) *string {
+	var cookies []string
+	for _, c := range monitor.Script.Configuration.Cookies {
+		cookie := http.Cookie{
+			Name:   c.Name,
+			Value:  c.Value,
+			Domain: c.Domain,
+			Path:   *c.Path,
+		}
+		cookies = append(cookies, cookie.String())
+	}
+	res := strings.Join(cookies, "/n")
+	return &res
 }
