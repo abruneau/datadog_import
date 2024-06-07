@@ -14,8 +14,8 @@ func parseNavigateType(evt *event.Navigate) datadog.GoToParams {
 	return params
 }
 
-func ParseNavigateStep(evt *event.Navigate) *datadogV1.SyntheticsStep {
-	step := datadogV1.NewSyntheticsStep()
+func ParseNavigateStep(evt *event.Navigate) datadogV1.SyntheticsStep {
+	step := *datadogV1.NewSyntheticsStep()
 	step.Name = &evt.Description
 	step.Type = datadogV1.SYNTHETICSSTEPTYPE_GO_TO_URL.Ptr()
 	falseValue := false

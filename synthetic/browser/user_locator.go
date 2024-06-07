@@ -21,6 +21,14 @@ func getUserLocator(locators event.Locators) datadog.UserLocator {
 				}{"css", locator.Value})
 				break
 			}
+			if locator.Type == "dom" {
+
+				us.Values = append(us.Values, struct {
+					Type  string "json:\"type,omitempty\""
+					Value string "json:\"value,omitempty\""
+				}{"xpath", locator.Value})
+				break
+			}
 		}
 	}
 

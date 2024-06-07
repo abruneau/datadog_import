@@ -22,7 +22,7 @@ func parseClickType(evt *event.Click) datadog.ClickParams {
 	return params
 }
 
-func ParseClickStep(evt *event.Click) *datadogV1.SyntheticsStep {
+func ParseClickStep(evt *event.Click) (steps []datadogV1.SyntheticsStep) {
 	step := datadogV1.NewSyntheticsStep()
 	step.Name = &evt.Description
 	step.Type = datadogV1.SYNTHETICSSTEPTYPE_CLICK.Ptr()
@@ -38,6 +38,9 @@ func ParseClickStep(evt *event.Click) *datadogV1.SyntheticsStep {
 	}
 
 	step.Params = parseClickType(evt)
+	validations := ParseValidation(evt.Validate)
 
-	return step
+	steps = append(steps, *step)
+	steps = append(steps, validations...)
+	return
 }

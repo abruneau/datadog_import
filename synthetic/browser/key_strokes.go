@@ -24,8 +24,8 @@ func parseKeyStrokesType(evt *event.KeyStrokes) (params datadog.TextParams, vari
 	return params, variable
 }
 
-func ParseKeyStrokesStep(evt *event.KeyStrokes) (step *datadogV1.SyntheticsStep, variable string) {
-	step = datadogV1.NewSyntheticsStep()
+func ParseKeyStrokesStep(evt *event.KeyStrokes) (step datadogV1.SyntheticsStep, variable string) {
+	step = *datadogV1.NewSyntheticsStep()
 	step.Name = &evt.Description
 	step.Type = datadogV1.SYNTHETICSSTEPTYPE_TYPE_TEXT.Ptr()
 

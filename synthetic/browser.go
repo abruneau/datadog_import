@@ -75,15 +75,15 @@ func getSteps(events event.Events) (steps []datadogV1.SyntheticsStep, variables 
 	}
 	for _, evt := range events[1:] {
 		if evt.GetType() == event.Types.Click {
-			steps = append(steps, *browser.ParseClickStep(evt.(*event.Click)))
+			steps = append(steps, browser.ParseClickStep(evt.(*event.Click))...)
 		} else if evt.GetType() == event.Types.KeyStrokes {
 			step, variable := browser.ParseKeyStrokesStep(evt.(*event.KeyStrokes))
-			steps = append(steps, *step)
+			steps = append(steps, step)
 			variables = append(variables, variable)
 		} else if evt.GetType() == event.Types.Navigate {
-			steps = append(steps, *browser.ParseNavigateStep(evt.(*event.Navigate)))
+			steps = append(steps, browser.ParseNavigateStep(evt.(*event.Navigate)))
 		} else if evt.GetType() == event.Types.Javascript {
-			steps = append(steps, *browser.ParseJavascriptStep(evt.(*event.Javascript)))
+			steps = append(steps, browser.ParseJavascriptStep(evt.(*event.Javascript)))
 		} else {
 			step := datadogV1.NewSyntheticsStep()
 			name := evt.GetDescription()
@@ -126,9 +126,12 @@ func getDevice(monitor *dynatrace.SyntheticMonitor) []datadogV1.SyntheticsDevice
 
 func getHeaders(monitor *dynatrace.SyntheticMonitor) map[string]string {
 	var headers = map[string]string{}
-	for _, h := range monitor.Script.Configuration.RequestHeaders.Headers {
-		headers[h.Name] = h.Value
+	if monitor.Script.Configuration.RequestHeaders != nil {
+		for _, h := range monitor.Script.Configuration.RequestHeaders.Headers {
+			headers[h.Name] = h.Value
+		}
 	}
+
 	return headers
 }
 

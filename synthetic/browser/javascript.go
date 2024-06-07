@@ -17,8 +17,8 @@ func parseJavaScriptType(evt *event.Javascript) datadog.JavascriptParams {
 	return params
 }
 
-func ParseJavascriptStep(evt *event.Javascript) *datadogV1.SyntheticsStep {
-	step := datadogV1.NewSyntheticsStep()
+func ParseJavascriptStep(evt *event.Javascript) datadogV1.SyntheticsStep {
+	step := *datadogV1.NewSyntheticsStep()
 	step.Name = &evt.Description
 	step.Type = datadogV1.SYNTHETICSSTEPTYPE_ASSERT_FROM_JAVASCRIPT.Ptr()
 	falseValue := false
