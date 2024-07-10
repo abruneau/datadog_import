@@ -12,9 +12,9 @@ import (
 )
 
 type Config struct {
-	URL    string `yaml:"url" doc:"Dynatrace URL"`
-	ApiKey string `yaml:"api_key" doc:"Dynatrace API Key"`
-	Input  string `yaml:"input" doc:"Input directory containing Dynatrace synthetics tests definitions"`
+	URL    string `mapstructure:"url" doc:"Dynatrace URL"`
+	ApiKey string `mapstructure:"api_key" doc:"Dynatrace API Key"`
+	Input  string `mapstructure:"input" doc:"Input directory containing Dynatrace synthetics tests definitions"`
 }
 
 func (conf *Config) GetReader() (converter.Reader, error) {
