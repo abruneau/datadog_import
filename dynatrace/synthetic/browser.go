@@ -34,6 +34,9 @@ func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor) (*datadogV1.Synthet
 
 	test.Name = monitor.Name
 	frequency := int64(monitor.FrequencyMin * 60)
+	if frequency < 300 {
+		frequency = 300
+	}
 	test.Options.TickEvery = &frequency
 	test.Tags = getTags(monitor.Tags)
 

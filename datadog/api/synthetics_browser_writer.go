@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/DataDog/datadog-api-client-go/v2/api/datadog"
 	"github.com/DataDog/datadog-api-client-go/v2/api/datadogV1"
@@ -40,6 +41,9 @@ func (writer *SyntheticsBrowserWriter) Write(obj interface {
 	MarshalJSON() ([]byte, error)
 }, name string) error {
 	test := obj.(*datadogV1.SyntheticsBrowserTest)
-	_, _, err := writer.client.CreateSyntheticsBrowserTest(writer.ctx, *test)
-	return err
+	_, r, err := writer.client.CreateSyntheticsBrowserTest(writer.ctx, *test)
+	if err != nil {
+		return fmt.Errorf("Error %v\nFull HTTP response: %v\n", err, r)
+	}
+	return nil
 }
