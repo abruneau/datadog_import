@@ -28,7 +28,10 @@ func ParseTapStep(evt *event.Tap) (steps []datadogV1.SyntheticsStep) {
 	step.NoScreenshot = &falseValue
 
 	if evt.Wait != nil && evt.Wait.TimeoutInMilliseconds != nil {
-		timeout := int64(*evt.Wait.TimeoutInMilliseconds) * 1000
+		timeout := int64(*evt.Wait.TimeoutInMilliseconds)
+		if timeout > 5000 {
+			timeout = 5000
+		}
 		step.Timeout = &timeout
 	}
 

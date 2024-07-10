@@ -18,7 +18,7 @@ func parseKeyStrokesType(evt *event.KeyStrokes) (params datadog.TextParams, vari
 	params.Element.MultiLocator = parseLocators(evt.Target.Locators)
 	params.Element.UserLocator = getUserLocator(evt.Target.Locators)
 	if evt.Wait != nil && evt.Wait.Milliseconds != nil {
-		params.Delay = *evt.Wait.Milliseconds * 1000
+		params.Delay = *evt.Wait.Milliseconds
 	}
 
 	return params, variable
@@ -36,7 +36,10 @@ func ParseKeyStrokesStep(evt *event.KeyStrokes) (step datadogV1.SyntheticsStep, 
 	step.NoScreenshot = &falseValue
 
 	if evt.Wait != nil && evt.Wait.TimeoutInMilliseconds != nil {
-		timeout := int64(*evt.Wait.TimeoutInMilliseconds) * 1000
+		timeout := int64(*evt.Wait.TimeoutInMilliseconds)
+		if timeout > 5000 {
+			timeout = 5000
+		}
 		step.Timeout = &timeout
 	}
 
