@@ -9,6 +9,7 @@ import (
 
 	"dynatrace_to_datadog/common"
 	"dynatrace_to_datadog/converter"
+	"dynatrace_to_datadog/datadog/api"
 	"dynatrace_to_datadog/dynatrace"
 
 	"github.com/sirupsen/logrus"
@@ -106,12 +107,22 @@ func makeConverter(cmd *cobra.Command, args []string) {
 	} else {
 		panic(fmt.Errorf("dynatrace config is nil"))
 	}
+	ddConfig := viper.Sub("datadog")
+	if ddConfig != nil {
+		var datadogConf api.Config
+		err := ddConfig.Unmarshal(&datadogConf)
+		common.Check(err)
+		conv.Writers = append(conv.Writers, datadogConf.NewSyntheticsBrowserWriter())
+	}
+
 	outputPath := viper.GetString("output")
 	if outputPath != "" {
 		writer, err := common.NewFileWriter(outputPath)
 		common.Check(err)
 		conv.Writers = append(conv.Writers, writer)
-	} else {
+	}
+
+	if len(conv.Writers) == 0 {
 		panic(fmt.Errorf("no output found"))
 	}
 	conv.Convert()

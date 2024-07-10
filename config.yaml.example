@@ -1,14 +1,24 @@
 # Log level
-log: info
+Log: info
 
 # Dynatrace Configuration
-dynatrace:
+Dynatrace:
   # Dynatrace URL
-  url: ""
+  URL: ""
   # Dynatrace API Key
-  api_key: ""
+  ApiKey: ""
   # Input directory containing Dynatrace synthetics tests definitions
-  input: ""
+  Input: ""
+
+
+# Datadog Configuration
+Datadog:
+  # The site of the Datadog intake to send data to.
+  Site: ""
+  # The Datadog API key used to send data to Datadog
+  ApiKey: ""
+  # The application key used to access Datadog's programatic API
+  AppKey: ""
 
 # Output Directory
-output: ""
+Output: ""
