@@ -2,7 +2,7 @@ package datadog
 
 type TextParams struct {
 	Delay   int    `json:"delay,omitempty"`
-	Value   string `json:"value,omitempty"`
+	Value   string `json:"value"`
 	Element struct {
 		URL             string       `json:"url,omitempty"`
 		MultiLocator    MultiLocator `json:"multiLocator,omitempty"`
