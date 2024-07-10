@@ -7,15 +7,15 @@ import (
 )
 
 func getUserLocator(locators event.Locators) datadog.UserLocator {
-	var us datadog.UserLocator
+	var ul datadog.UserLocator
 
-	us.FailTestOnCannotLocate = false
+	ul.FailTestOnCannotLocate = false
 
 	if len(locators) > 0 {
 		for _, locator := range locators {
 			if locator.Type == "css" {
 
-				us.Values = append(us.Values, struct {
+				ul.Values = append(ul.Values, struct {
 					Type  string "json:\"type,omitempty\""
 					Value string "json:\"value,omitempty\""
 				}{"css", locator.Value})
@@ -23,7 +23,7 @@ func getUserLocator(locators event.Locators) datadog.UserLocator {
 			}
 			if locator.Type == "dom" {
 
-				us.Values = append(us.Values, struct {
+				ul.Values = append(ul.Values, struct {
 					Type  string "json:\"type,omitempty\""
 					Value string "json:\"value,omitempty\""
 				}{"xpath", locator.Value})
@@ -32,5 +32,5 @@ func getUserLocator(locators event.Locators) datadog.UserLocator {
 		}
 	}
 
-	return us
+	return ul
 }

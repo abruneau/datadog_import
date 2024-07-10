@@ -13,6 +13,10 @@ func ParseValidation(validations event.Validations) (steps []datadogV1.Synthetic
 		if validation.Type == event.ValidationTypes.ContentMatch {
 			step.Type = datadogV1.SYNTHETICSSTEPTYPE_ASSERT_ELEMENT_CONTENT.Ptr()
 			var params datadog.AssertElementContentParams
+			if validation.Target == nil {
+				// TODO: handle this better.
+				continue
+			}
 			params.Element.UserLocator = getUserLocator(validation.Target.Locators)
 			params.Value = validation.Match
 			name := "content_match"

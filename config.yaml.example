@@ -1,0 +1,14 @@
+# Log level
+log: info
+
+# Dynatrace Configuration
+dynatrace:
+  # Dynatrace URL
+  url: ""
+  # Dynatrace API Key
+  api_key: ""
+  # Input directory containing Dynatrace synthetics tests definitions
+  input: ""
+
+# Output Directory
+output: ""
