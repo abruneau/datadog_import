@@ -36,6 +36,8 @@ func (fw *FileWriter) Write(obj interface {
 	}
 	var output string
 
+	fileName = strings.ReplaceAll(fileName, "/", "")
+
 	if strings.HasSuffix(fileName, ".json") {
 		output = path.Join(fw.filePath, fileName)
 	} else {

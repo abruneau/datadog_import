@@ -24,9 +24,10 @@ func (c *Converter) Convert() {
 	writeError := 0
 	for {
 		// Read
-		name, data, err := c.Reader.Read()
+		id, name, data, err := c.Reader.Read()
 		contextLogger := c.Log.WithFields(logrus.Fields{
-			"Object": name,
+			"Object":   name,
+			"OriginId": id,
 		})
 		if err != nil {
 			if errors.Is(err, common.ErrNoMoreData) {

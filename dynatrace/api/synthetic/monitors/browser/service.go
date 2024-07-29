@@ -24,7 +24,7 @@ func Service(credentials *settings.Credentials) *DefaultService {
 		client:   rest.DefaultClient(credentials.URL, credentials.Token),
 		options: setting.ServiceOptions{
 			Get:   settings.Path("/api/v1/synthetic/monitors/%s"),
-			List:  settings.Path("/api/v1/synthetic/monitors?type=BROWSER"),
+			List:  settings.Path("/api/v1/synthetic/monitors"),
 			Stubs: &monitors.Monitors{},
 		},
 	}
@@ -48,10 +48,15 @@ func (me *DefaultService) listURL() string {
 	panic("service options must provide an URL to list records")
 }
 
-func (me *DefaultService) List() (api.Stubs, error) {
+func (me *DefaultService) List(filter string) (api.Stubs, error) {
 	var err error
-
-	req := me.client.Get(me.listURL(), 200)
+	var url string
+	if filter != "" {
+		url = me.listURL() + "?" + filter
+	} else {
+		url = me.listURL()
+	}
+	req := me.client.Get(url, 200)
 	stubs := me.stubs()
 	if err = req.Finish(stubs); err != nil {
 		return nil, err

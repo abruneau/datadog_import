@@ -112,7 +112,7 @@ func makeConverter(cmd *cobra.Command, args []string) {
 		var datadogConf api.Config
 		err := ddConfig.Unmarshal(&datadogConf)
 		common.Check(err)
-		conv.Writers = append(conv.Writers, datadogConf.NewSyntheticsBrowserWriter())
+		conv.Writers = append(conv.Writers, datadogConf.NewDatadogWriter())
 	}
 
 	outputPath := viper.GetString("output")

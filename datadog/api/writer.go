@@ -3,17 +3,18 @@ package api
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/DataDog/datadog-api-client-go/v2/api/datadog"
 	"github.com/DataDog/datadog-api-client-go/v2/api/datadogV1"
 )
 
-type SyntheticsBrowserWriter struct {
+type DatadogWriter struct {
 	ctx    context.Context
 	client *datadogV1.SyntheticsApi
 }
 
-func (conf *Config) NewSyntheticsBrowserWriter() *SyntheticsBrowserWriter {
+func (conf *Config) NewDatadogWriter() *DatadogWriter {
 	ctx := datadog.NewDefaultContext(context.Background())
 	ctx = context.WithValue(ctx, datadog.ContextServerVariables,
 		map[string]string{"site": conf.Site})
@@ -31,19 +32,31 @@ func (conf *Config) NewSyntheticsBrowserWriter() *SyntheticsBrowserWriter {
 	apiClient := datadog.NewAPIClient(configuration)
 	api := datadogV1.NewSyntheticsApi(apiClient)
 
-	return &SyntheticsBrowserWriter{
+	return &DatadogWriter{
 		ctx:    ctx,
 		client: api}
 
 }
 
-func (writer *SyntheticsBrowserWriter) Write(obj interface {
+func (writer *DatadogWriter) Write(obj interface {
 	MarshalJSON() ([]byte, error)
 }, name string) error {
-	test := obj.(*datadogV1.SyntheticsBrowserTest)
-	_, r, err := writer.client.CreateSyntheticsBrowserTest(writer.ctx, *test)
+	var err error
+	var r *http.Response
+
+	switch v := obj.(type) {
+	case *datadogV1.SyntheticsBrowserTest:
+		_, r, err = writer.client.CreateSyntheticsBrowserTest(writer.ctx, *v)
+	case *datadogV1.SyntheticsAPITest:
+		_, r, err = writer.client.CreateSyntheticsAPITest(writer.ctx, *v)
+	}
+
 	if err != nil {
-		return fmt.Errorf("Error %v\nFull HTTP response: %v\n", err, r)
+		msg := fmt.Sprintf("Error %v\n", err)
+		if r != nil {
+			msg += fmt.Sprintf("Full HTTP response: %v\n", r)
+		}
+		return fmt.Errorf(msg)
 	}
 	return nil
 }

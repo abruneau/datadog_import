@@ -9,6 +9,10 @@ Dynatrace:
   ApiKey: ""
   # Input directory containing Dynatrace synthetics tests definitions
   Input: ""
+  # Filters to apply to the list of tests separated by & symbol
+  Filters: ""
+  # List of test IDs to fetch
+  IdList: []
 
 
 # Datadog Configuration

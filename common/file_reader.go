@@ -34,13 +34,14 @@ func NewFileReader(filePath string) (*FileReader, error) {
 }
 
 // Read reads a line from the file
-func (fr *FileReader) Read() (fileName string, data []byte, err error) {
+func (fr *FileReader) Read() (id, fileName string, data []byte, err error) {
 	if fr.index >= len(fr.files) {
 		err = ErrNoMoreData
 		return // no more data
 	}
 	// fileName = fr.files[fr.index]
 	_, fileName = path.Split(fr.files[fr.index])
+	id = fileName
 	data, err = os.ReadFile(fr.files[fr.index])
 
 	fr.index++
