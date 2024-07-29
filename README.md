@@ -64,27 +64,17 @@ Get the [latest release](https://github.com/abruneau/dynatrace_to_datadog/releas
 
 ## Usage
 
+- Create a config file in `yaml`. You can look at [config.yaml.example](./config.yaml.example) for guidance.
+- run the cli
+
 ```sh
 Usage:
   dynatrace_to_datadog [flags]
 
 Flags:
-  -d, --debug           ennable debug mode
+      --config string   config file (default is ./config.yaml)
   -h, --help            help for dynatrace_to_datadog
-  -i, --input string    name of the input file or directory
-  -o, --output string   name of the output directory
-```
-
-Convert a specific synthetic:
-
-```sh
-dynatrace_to_datadog -i ./my_dynatrace_test.json -o ./output
-```
-
-Convert all synthetics in a directory
-
-```sh
-dynatrace_to_datadog -i ./my_dynatrace_test_directory -o ./output
+      --log string      log level (default is info)) (default "info")
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -94,12 +84,16 @@ dynatrace_to_datadog -i ./my_dynatrace_test_directory -o ./output
 | Source  | Support |
 | ------- | ------- |
 | browser | ✅      |
-| api     | ❌      |
+| api     | ✅      |
+
+### API Tests Limitations
+
+- Pre and post scripts don't have equivalent in Datadog. The details of those scripts will be reported in the message section of the test.
+- Certificate Expiry Date Constraint is not supported in HTTP tests. It should be implemented in SSL tests
 
 <!-- ROADMAP -->
 
 ## Roadmap
-
 
 See the [open issues](https://github.com/abruneau/dynatrace_to_datadog/issues) for a full list of proposed features (and known issues).
 
