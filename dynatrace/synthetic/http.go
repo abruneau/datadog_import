@@ -66,12 +66,12 @@ func (c *httpTestConverter) parseHTTPRequests() {
 		steps[i] = c.parseHTTPRequest(r)
 	}
 	if len(steps) == 1 {
-		c.ddTest.Config.Assertions = steps[0].Assertions
-		c.ddTest.Config.Request = &steps[0].Request
+		c.ddTest.Config.Assertions = steps[0].SyntheticsAPITestStep.Assertions
+		c.ddTest.Config.Request = &steps[0].SyntheticsAPITestStep.Request
 		c.ddTest.Config.Request.AllowInsecure = nil
 		c.ddTest.Config.Request.FollowRedirects = nil
-		c.ddTest.Options.AllowInsecure = steps[0].Request.AllowInsecure
-		c.ddTest.Options.FollowRedirects = steps[0].Request.FollowRedirects
+		c.ddTest.Options.AllowInsecure = steps[0].SyntheticsAPITestStep.Request.AllowInsecure
+		c.ddTest.Options.FollowRedirects = steps[0].SyntheticsAPITestStep.Request.FollowRedirects
 	} else {
 		// Maximum number of elements in parameter 'steps' should be 10
 		if len(steps) > 10 {
@@ -84,7 +84,7 @@ func (c *httpTestConverter) parseHTTPRequests() {
 }
 
 func (c *httpTestConverter) parseHTTPRequest(req *dynatrace.Request) (step datadogV1.SyntheticsAPIStep) {
-	subtype := datadogV1.SYNTHETICSAPISTEPSUBTYPE_HTTP
+	subtype := datadogV1.SYNTHETICSAPITESTSTEPSUBTYPE_HTTP
 	var name = ""
 	if req.Description != nil {
 		name = *req.Description
@@ -124,7 +124,7 @@ func (c *httpTestConverter) parseHTTPRequest(req *dynatrace.Request) (step datad
 	if req.PostProcessing != nil {
 		c.comment = append(c.comment, fmt.Sprintf("Post-processing script not supported: %s", *req.PostProcessing))
 	}
-	return *datadogV1.NewSyntheticsAPIStep(assertions, name, *request, subtype)
+	return datadogV1.SyntheticsAPIStep{SyntheticsAPITestStep: datadogV1.NewSyntheticsAPITestStep(assertions, name, *request, subtype)}
 }
 
 var httpRuleTypeMap = map[validation.Type]func(rule validation.Rule) (datadogV1.SyntheticsAssertion, error){
