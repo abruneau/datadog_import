@@ -13,14 +13,6 @@ import (
 	"github.com/dynatrace-oss/terraform-provider-dynatrace/dynatrace/api/v1/config/synthetic/monitors/request"
 )
 
-var stepTypeMap = map[event.Type]*datadogV1.SyntheticsStepType{
-	event.Types.Click:      datadogV1.SYNTHETICSSTEPTYPE_CLICK.Ptr(),
-	event.Types.Tap:        datadogV1.SYNTHETICSSTEPTYPE_CLICK.Ptr(),
-	event.Types.KeyStrokes: datadogV1.SYNTHETICSSTEPTYPE_TYPE_TEXT.Ptr(),
-	event.Types.Javascript: datadogV1.SYNTHETICSSTEPTYPE_ASSERT_FROM_JAVASCRIPT.Ptr(),
-	event.Types.Navigate:   datadogV1.SYNTHETICSSTEPTYPE_GO_TO_URL.Ptr(),
-}
-
 func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor) (*datadogV1.SyntheticsBrowserTest, error) {
 	var test = datadogV1.NewSyntheticsBrowserTestWithDefaults()
 	var err error
