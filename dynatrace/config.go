@@ -13,11 +13,12 @@ import (
 )
 
 type Config struct {
-	URL     string   `mapstructure:"url" doc:"Dynatrace URL"`
-	ApiKey  string   `mapstructure:"api_key" doc:"Dynatrace API Key"`
-	Input   string   `mapstructure:"input" doc:"Input directory containing Dynatrace synthetics tests definitions"`
-	Filters string   `mapstructure:"filters" doc:"Filters to apply to the list of tests separated by & symbol"`
-	IdList  []string `mapstructure:"id_list" doc:"List of test IDs to fetch"`
+	URL        string   `mapstructure:"url" doc:"Dynatrace URL"`
+	ApiKey     string   `mapstructure:"api_key" doc:"Dynatrace API Key"`
+	Input      string   `mapstructure:"input" doc:"Input directory containing Dynatrace synthetics tests definitions"`
+	Filters    string   `mapstructure:"filters" doc:"Filters to apply to the list of tests separated by & symbol"`
+	IdList     []string `mapstructure:"id_list" doc:"List of test IDs to fetch"`
+	CustomTags []string `mapstructure:"custom_tags" doc:"List of custom tags to add to the tests"`
 }
 
 func (conf *Config) GetReader() (converter.Reader, error) {
@@ -44,14 +45,14 @@ func (conf *Config) GetTransformer() converter.Transformer {
 				return nil, err
 			}
 
-			return synthetic.ConvertBrowserTest(browserTest)
+			return synthetic.ConvertBrowserTest(browserTest, conf.CustomTags)
 		} else if test.Type == monitors.Types.HTTP {
 			httpTest := &http.SyntheticMonitor{}
 			if err := json.Unmarshal(data, httpTest); err != nil {
 				return nil, err
 			}
 
-			return synthetic.ConvertHTTPTest(httpTest)
+			return synthetic.ConvertHTTPTest(httpTest, conf.CustomTags)
 		} else {
 			return nil, fmt.Errorf("SYnthetic type not supported: %s", test.Type)
 		}
