@@ -20,14 +20,14 @@ type httpTestConverter struct {
 	comment     []string
 }
 
-func ConvertHTTPTest(monitor *dynatrace.SyntheticMonitor) (*datadogV1.SyntheticsAPITest, error) {
+func ConvertHTTPTest(monitor *dynatrace.SyntheticMonitor, customTags []string) (*datadogV1.SyntheticsAPITest, error) {
 	converter := httpTestConverter{
 		dynaMonitor: monitor,
 		ddTest:      datadogV1.NewSyntheticsAPITestWithDefaults(),
 	}
 
 	converter.setDefaults()
-	converter.setTags()
+	converter.setTags(customTags)
 	converter.parseHTTPRequests()
 	converter.setVariables()
 	converter.ddTest.Message = strings.Join(converter.comment, "\n")
@@ -56,8 +56,8 @@ func (c *httpTestConverter) setDefaults() {
 	c.ddTest.Options.TickEvery = &frequency
 }
 
-func (c *httpTestConverter) setTags() {
-	c.ddTest.Tags = getTags(c.dynaMonitor.Tags)
+func (c *httpTestConverter) setTags(customTags []string) {
+	c.ddTest.Tags = append(getTags(c.dynaMonitor.Tags), customTags...)
 }
 
 func (c *httpTestConverter) parseHTTPRequests() {

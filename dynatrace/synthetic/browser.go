@@ -13,7 +13,7 @@ import (
 	"github.com/dynatrace-oss/terraform-provider-dynatrace/dynatrace/api/v1/config/synthetic/monitors/request"
 )
 
-func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor) (*datadogV1.SyntheticsBrowserTest, error) {
+func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor, customTags []string) (*datadogV1.SyntheticsBrowserTest, error) {
 	var test = datadogV1.NewSyntheticsBrowserTestWithDefaults()
 	var err error
 	var variables, additional_cookies []string
@@ -30,7 +30,7 @@ func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor) (*datadogV1.Synthet
 		frequency = 300
 	}
 	test.Options.TickEvery = &frequency
-	test.Tags = getTags(monitor.Tags)
+	test.Tags = append(getTags(monitor.Tags), customTags...)
 
 	test.Steps, variables, additional_cookies, err = getSteps(monitor.Script.Events)
 	if err != nil {

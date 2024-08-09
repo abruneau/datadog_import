@@ -13,6 +13,8 @@ Dynatrace:
   Filters: ""
   # List of test IDs to fetch
   IdList: []
+  # List of custom tags to add to the tests
+  CustomTags: []
 
 
 # Datadog Configuration
