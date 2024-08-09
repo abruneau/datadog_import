@@ -12,11 +12,22 @@ import (
 	http "github.com/dynatrace-oss/terraform-provider-dynatrace/dynatrace/api/v1/config/synthetic/monitors/http/settings"
 )
 
+type Filters struct {
+	ManagementZone  string   `mapstructure:"management_zone" doc:"Filters the resulting set of monitors to those which are part of the specified management zone ID."`
+	Tags            []string `mapstructure:"tags" doc:"Filters the resulting set of monitors by specified tags."`
+	Location        string   `mapstructure:"location" doc:"Filters the resulting set of monitors by specified location ID."`
+	Type            string   `mapstructure:"type" doc:"Filters the resulting set of monitors to those of the specified type: BROWSER or HTTP."`
+	Enabled         string   `mapstructure:"enabled" doc:"Filters the resulting set of monitors to those which are enabled (true) or disabled (false)"`
+	CredentialId    string   `mapstructure:"credential_id" doc:"Filters the resulting set of monitors to those using the specified credential ID."`
+	CredentialOwner string   `mapstructure:"credential_owner" doc:"Filters the resulting set of monitors to those using the specified credential owner."`
+	AssignedApps    string   `mapstructure:"assigned_apps" doc:"Filters the resulting set of monitors to those assigned to the specified application IDs."`
+}
+
 type Config struct {
 	URL        string   `mapstructure:"url" doc:"Dynatrace URL"`
 	ApiKey     string   `mapstructure:"api_key" doc:"Dynatrace API Key"`
 	Input      string   `mapstructure:"input" doc:"Input directory containing Dynatrace synthetics tests definitions"`
-	Filters    string   `mapstructure:"filters" doc:"Filters to apply to the list of tests separated by & symbol"`
+	Filters    Filters  `mapstructure:"filters" doc:"Filters to apply to the list of tests"`
 	IdList     []string `mapstructure:"id_list" doc:"List of test IDs to fetch"`
 	CustomTags []string `mapstructure:"custom_tags" doc:"List of custom tags to add to the tests"`
 }

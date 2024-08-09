@@ -9,8 +9,26 @@ Dynatrace:
   ApiKey: ""
   # Input directory containing Dynatrace synthetics tests definitions
   Input: ""
-  # Filters to apply to the list of tests separated by & symbol
-  Filters: ""
+
+  # Filters to apply to the list of tests
+  Filters:
+    # Filters the resulting set of monitors to those which are part of the specified management zone ID.
+    ManagementZone: ""
+    # Filters the resulting set of monitors by specified tags.
+    Tags: []
+    # Filters the resulting set of monitors by specified location ID.
+    Location: ""
+    # Filters the resulting set of monitors to those of the specified type: BROWSER or HTTP.
+    Type: ""
+    # Filters the resulting set of monitors to those which are enabled (true) or disabled (false)
+    Enabled: ""
+    # Filters the resulting set of monitors to those using the specified credential ID.
+    CredentialId: ""
+    # Filters the resulting set of monitors to those using the specified credential owner.
+    CredentialOwner: ""
+    # Filters the resulting set of monitors to those assigned to the specified application IDs.
+    AssignedApps: ""
+
   # List of test IDs to fetch
   IdList: []
   # List of custom tags to add to the tests

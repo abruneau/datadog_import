@@ -29,7 +29,7 @@ func (conf *Config) NewAPIReader() (*APIReader, error) {
 			index:    0,
 		}, nil
 	}
-	tests, err = client.List(conf.Filters)
+	tests, err = client.List(buildFilter(conf.Filters))
 	if err != nil {
 		return nil, err
 	}
@@ -38,6 +38,40 @@ func (conf *Config) NewAPIReader() (*APIReader, error) {
 		tests:  tests,
 		index:  0,
 	}, nil
+}
+
+func buildFilter(filters Filters) string {
+	var res string
+	if filters.ManagementZone != "" {
+		res += "managementZone:" + filters.ManagementZone + "&"
+	}
+	for _, tag := range filters.Tags {
+		res += "tag:" + tag + "&"
+	}
+	if filters.Location != "" {
+		res += "location:" + filters.Location + "&"
+	}
+	if filters.Type != "" && (filters.Type == "BROWSER" || filters.Type == "HTTP") {
+		res += "type:" + filters.Type + "&"
+	}
+	if filters.Enabled != "" && (filters.Enabled == "true" || filters.Enabled == "false") {
+		res += "enabled:" + filters.Enabled + "&"
+	}
+	if filters.CredentialId != "" {
+		res += "credentialId:" + filters.CredentialId + "&"
+	}
+	if filters.CredentialOwner != "" {
+		res += "credentialOwner:" + filters.CredentialOwner + "&"
+	}
+	if filters.AssignedApps != "" {
+		res += "assignedApps:" + filters.AssignedApps + "&"
+	}
+
+	if res != "" {
+		res = res[:len(res)-1]
+	}
+
+	return res
 }
 
 // Read reads data from the API
