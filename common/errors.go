@@ -3,11 +3,14 @@ package common
 import (
 	"errors"
 	"fmt"
+
+	"github.com/sirupsen/logrus"
 )
 
-func Check(e error) {
+func Check(e error, log *logrus.Logger) {
 	if e != nil {
-		panic(e)
+		log.Panic(e)
+		// panic(e)
 	}
 }
 

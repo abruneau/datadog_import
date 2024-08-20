@@ -39,7 +39,8 @@ func (conf *Config) GetReader() (converter.Reader, error) {
 	if conf.ApiKey != "" && conf.URL != "" {
 		return conf.NewAPIReader()
 	}
-	return nil, fmt.Errorf("no reader found")
+	jsonConf, _ := json.MarshalIndent(conf, "", "  ")
+	return nil, fmt.Errorf("invalid Dynatrace configuration:\n%s", jsonConf)
 }
 
 func (conf *Config) GetTransformer() converter.Transformer {

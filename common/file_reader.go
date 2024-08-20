@@ -15,14 +15,14 @@ type FileReader struct {
 func NewFileReader(filePath string) (*FileReader, error) {
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
-		Check(err)
+		return nil, err
 	}
 
 	var files []string
 
 	if fileInfo.IsDir() {
 		files, err = GetJSONFiles(filePath)
-		Check(err)
+		return nil, err
 	} else {
 		files = []string{filePath}
 	}

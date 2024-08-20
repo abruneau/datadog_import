@@ -81,7 +81,7 @@ func initConfig() {
 func makeConfig() *common.Config {
 	log := logrus.New()
 	level, err := logrus.ParseLevel(viper.GetString("log"))
-	common.Check(err)
+	common.Check(err, log)
 	log.SetLevel(level)
 	return &common.Config{
 		Log: log,
@@ -95,9 +95,9 @@ func makeConverter(cmd *cobra.Command, args []string) {
 	if dynatraceConfig != nil {
 		var dynaConf dynatrace.Config
 		err := dynatraceConfig.Unmarshal(&dynaConf)
-		common.Check(err)
+		common.Check(err, conf.Log)
 		conv.Reader, err = dynaConf.GetReader()
-		common.Check(err)
+		common.Check(err, conf.Log)
 		conv.Transform = dynaConf.GetTransformer()
 	} else {
 		panic(fmt.Errorf("dynatrace config is nil"))
@@ -106,14 +106,14 @@ func makeConverter(cmd *cobra.Command, args []string) {
 	if ddConfig != nil {
 		var datadogConf api.Config
 		err := ddConfig.Unmarshal(&datadogConf)
-		common.Check(err)
+		common.Check(err, conf.Log)
 		conv.Writers = append(conv.Writers, datadogConf.NewDatadogWriter())
 	}
 
 	outputPath := viper.GetString("output")
 	if outputPath != "" {
 		writer, err := common.NewFileWriter(outputPath)
-		common.Check(err)
+		common.Check(err, conf.Log)
 		conv.Writers = append(conv.Writers, writer)
 	}
 
