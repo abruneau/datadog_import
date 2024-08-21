@@ -46,7 +46,7 @@ func buildFilter(filters Filters) string {
 		res += "managementZone:" + filters.ManagementZone + "&"
 	}
 	for _, tag := range filters.Tags {
-		res += "tag:" + tag + "&"
+		res += "tag=" + tag + "&"
 	}
 	if filters.Location != "" {
 		res += "location:" + filters.Location + "&"
