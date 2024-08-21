@@ -15,9 +15,12 @@ var clickTypeMap = map[int]datadog.ClickType{
 func parseClickType(evt *event.Click) datadog.ClickParams {
 	var params datadog.ClickParams
 
-	params.Element.MultiLocator = parseLocators(evt.Target.Locators)
+	if evt.Target != nil {
+		params.Element.MultiLocator = parseLocators(evt.Target.Locators)
+		params.Element.UserLocator = getUserLocator(evt.Target.Locators)
+	}
+
 	params.ClickType = clickTypeMap[evt.Button]
-	params.Element.UserLocator = getUserLocator(evt.Target.Locators)
 
 	return params
 }
