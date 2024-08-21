@@ -39,7 +39,7 @@ func marshalWithDocs(v interface{}, indentLevel int) ([]byte, error) {
 		fieldType := rt.Field(i)
 
 		// Get YAML tag
-		yamlTag := fieldType.Tag.Get("yaml")
+		yamlTag := fieldType.Tag.Get("mapstructure")
 		if yamlTag == "" {
 			yamlTag = fieldType.Name
 		}

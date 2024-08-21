@@ -1,48 +1,48 @@
 # Log level
-Log: info
+log: info
 
 # Dynatrace Configuration
-Dynatrace:
+dynatrace:
   # Dynatrace URL
-  URL: ""
+  url: ""
   # Dynatrace API Key
-  ApiKey: ""
+  api_key: ""
   # Input directory containing Dynatrace synthetics tests definitions
-  Input: ""
+  input: ""
 
   # Filters to apply to the list of tests
-  Filters:
+  filters:
     # Filters the resulting set of monitors to those which are part of the specified management zone ID.
-    ManagementZone: ""
+    management_zone: ""
     # Filters the resulting set of monitors by specified tags.
-    Tags: []
+    tags: []
     # Filters the resulting set of monitors by specified location ID.
-    Location: ""
+    location: ""
     # Filters the resulting set of monitors to those of the specified type: BROWSER or HTTP.
-    Type: ""
+    type: ""
     # Filters the resulting set of monitors to those which are enabled (true) or disabled (false)
-    Enabled: ""
+    enabled: ""
     # Filters the resulting set of monitors to those using the specified credential ID.
-    CredentialId: ""
+    credential_id: ""
     # Filters the resulting set of monitors to those using the specified credential owner.
-    CredentialOwner: ""
+    credential_owner: ""
     # Filters the resulting set of monitors to those assigned to the specified application IDs.
-    AssignedApps: ""
+    assigned_apps: ""
 
   # List of test IDs to fetch
-  IdList: []
+  id_list: []
   # List of custom tags to add to the tests
-  CustomTags: []
+  custom_tags: []
 
 
 # Datadog Configuration
-Datadog:
+datadog:
   # The site of the Datadog intake to send data to.
-  Site: ""
+  site: ""
   # The Datadog API key used to send data to Datadog
-  ApiKey: ""
+  api_key: ""
   # The application key used to access Datadog's programatic API
-  AppKey: ""
+  app_key: ""
 
 # Output Directory
-Output: ""
+output: ""
