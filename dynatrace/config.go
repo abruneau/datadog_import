@@ -1,6 +1,7 @@
 package dynatrace
 
 import (
+	"context"
 	"dynatrace_to_datadog/common"
 	"dynatrace_to_datadog/converter"
 	"dynatrace_to_datadog/dynatrace/synthetic"
@@ -44,7 +45,7 @@ func (conf *Config) GetReader() (converter.Reader, error) {
 }
 
 func (conf *Config) GetTransformer() converter.Transformer {
-	return func(data []byte) (interface {
+	return func(ctx context.Context, data []byte) (interface {
 		MarshalJSON() ([]byte, error)
 	}, error) {
 		test := &monitors.SyntheticMonitor{}
@@ -57,14 +58,14 @@ func (conf *Config) GetTransformer() converter.Transformer {
 				return nil, err
 			}
 
-			return synthetic.ConvertBrowserTest(browserTest, conf.CustomTags)
+			return synthetic.ConvertBrowserTest(ctx, browserTest, conf.CustomTags)
 		} else if test.Type == monitors.Types.HTTP {
 			httpTest := &http.SyntheticMonitor{}
 			if err := json.Unmarshal(data, httpTest); err != nil {
 				return nil, err
 			}
 
-			return synthetic.ConvertHTTPTest(httpTest, conf.CustomTags)
+			return synthetic.ConvertHTTPTest(ctx, httpTest, conf.CustomTags)
 		} else {
 			return nil, fmt.Errorf("SYnthetic type not supported: %s", test.Type)
 		}

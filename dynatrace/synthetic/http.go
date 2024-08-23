@@ -1,6 +1,7 @@
 package synthetic
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"slices"
@@ -20,7 +21,7 @@ type httpTestConverter struct {
 	comment     []string
 }
 
-func ConvertHTTPTest(monitor *dynatrace.SyntheticMonitor, customTags []string) (*datadogV1.SyntheticsAPITest, error) {
+func ConvertHTTPTest(ctx context.Context, monitor *dynatrace.SyntheticMonitor, customTags []string) (*datadogV1.SyntheticsAPITest, error) {
 	converter := httpTestConverter{
 		dynaMonitor: monitor,
 		ddTest:      datadogV1.NewSyntheticsAPITestWithDefaults(),

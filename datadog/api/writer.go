@@ -38,7 +38,7 @@ func (conf *Config) NewDatadogWriter() *DatadogWriter {
 
 }
 
-func (writer *DatadogWriter) Write(obj interface {
+func (writer *DatadogWriter) Write(ctx context.Context, obj interface {
 	MarshalJSON() ([]byte, error)
 }, name string) error {
 	var err error

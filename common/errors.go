@@ -1,16 +1,15 @@
 package common
 
 import (
+	"context"
+	"dynatrace_to_datadog/logctx"
 	"errors"
 	"fmt"
-
-	"github.com/sirupsen/logrus"
 )
 
-func Check(e error, log *logrus.Logger) {
+func Check(ctx context.Context, e error) {
 	if e != nil {
-		log.Panic(e)
-		// panic(e)
+		logctx.From(ctx).Panic(e)
 	}
 }
 

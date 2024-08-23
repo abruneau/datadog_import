@@ -1,9 +1,11 @@
 package dynatrace
 
 import (
+	"context"
 	"dynatrace_to_datadog/common"
 	"dynatrace_to_datadog/dynatrace/api"
 	"dynatrace_to_datadog/dynatrace/api/synthetic/monitors/browser"
+	"dynatrace_to_datadog/logctx"
 	"encoding/json"
 
 	dyna "github.com/dynatrace-oss/terraform-provider-dynatrace/dynatrace/api"
@@ -75,8 +77,7 @@ func buildFilter(filters Filters) string {
 }
 
 // Read reads data from the API
-func (ar *APIReader) Read() (id, name string, data []byte, err error) {
-
+func (ar *APIReader) Read(ctx context.Context) (id, name string, data []byte, err error) {
 	// Read from the list of IDs
 	if len(ar.testsIds) > 0 {
 		if ar.index >= len(ar.testsIds) {
@@ -84,7 +85,7 @@ func (ar *APIReader) Read() (id, name string, data []byte, err error) {
 			return
 		}
 		id = ar.testsIds[ar.index]
-
+		logctx.From(ctx).Debugf("reading Dyntrace test: %s", id)
 		data, err = ar.client.Get(id)
 		test := &monitors.SyntheticMonitor{}
 		if err := json.Unmarshal(data, test); err != nil {
@@ -103,7 +104,7 @@ func (ar *APIReader) Read() (id, name string, data []byte, err error) {
 
 	name = ar.tests[ar.index].Name
 	id = ar.tests[ar.index].ID
-
+	logctx.From(ctx).Debugf("reading Dyntrace test: %s", id)
 	data, err = ar.client.Get(id)
 
 	ar.index++

@@ -1,7 +1,9 @@
 package converter
 
 import (
+	"context"
 	"dynatrace_to_datadog/common"
+	"dynatrace_to_datadog/logctx"
 	"errors"
 	"reflect"
 
@@ -9,23 +11,24 @@ import (
 )
 
 type Converter struct {
-	*common.Config
 	Reader    Reader
 	Transform Transformer
 	Writers   []Writer
 }
 
-func (c *Converter) Convert() {
+func (c *Converter) Convert(ctx context.Context) {
 	read := 0
 	readError := 0
 	transformed := 0
 	transformError := 0
 	written := 0
 	writeError := 0
+
+	logger := logctx.From(ctx)
 	for {
 		// Read
-		id, name, data, err := c.Reader.Read()
-		contextLogger := c.Log.WithFields(logrus.Fields{
+		id, name, data, err := c.Reader.Read(ctx)
+		contextLogger := logger.WithFields(logrus.Fields{
 			"Object":   name,
 			"OriginId": id,
 		})
@@ -40,7 +43,8 @@ func (c *Converter) Convert() {
 		read += 1
 
 		// Convert
-		newObj, err := c.Transform(data)
+		contextLogger.Debug("converting object")
+		newObj, err := c.Transform(logctx.New(ctx, contextLogger), data)
 		if err != nil {
 			contextLogger.WithField("Transform", reflect.TypeOf(c.Transform)).Error(err)
 			transformError += 1
@@ -49,8 +53,9 @@ func (c *Converter) Convert() {
 		transformed += 1
 
 		// Write
+		contextLogger.Debug("writing object")
 		for _, writer := range c.Writers {
-			err = writer.Write(newObj, name)
+			err = writer.Write(logctx.New(ctx, contextLogger), newObj, name)
 			if err != nil {
 				contextLogger.WithField("Writer", reflect.TypeOf(writer)).Error(err)
 				writeError += 1
@@ -59,6 +64,6 @@ func (c *Converter) Convert() {
 			written += 1
 		}
 	}
-	c.Log.Infof("%d objects read, %d transformed and %d written.", read, transformed, written)
-	c.Log.Infof("%d read errors, %d transform errors and %d write errors.", readError, transformError, writeError)
+	logger.Infof("%d objects read, %d transformed and %d written.", read, transformed, written)
+	logger.Infof("%d read errors, %d transform errors and %d write errors.", readError, transformError, writeError)
 }

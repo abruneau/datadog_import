@@ -1,8 +1,10 @@
 package synthetic
 
 import (
+	"context"
 	"dynatrace_to_datadog/common"
 	"dynatrace_to_datadog/dynatrace/synthetic/browser"
+	"dynatrace_to_datadog/logctx"
 	"fmt"
 	"net/http"
 	"strings"
@@ -13,7 +15,7 @@ import (
 	"github.com/dynatrace-oss/terraform-provider-dynatrace/dynatrace/api/v1/config/synthetic/monitors/request"
 )
 
-func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor, customTags []string) (*datadogV1.SyntheticsBrowserTest, error) {
+func ConvertBrowserTest(ctx context.Context, monitor *dynatrace.SyntheticMonitor, customTags []string) (*datadogV1.SyntheticsBrowserTest, error) {
 	var test = datadogV1.NewSyntheticsBrowserTestWithDefaults()
 	var err error
 	var variables, additional_cookies []string
@@ -32,12 +34,12 @@ func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor, customTags []string
 	test.Options.TickEvery = &frequency
 	test.Tags = append(getTags(monitor.Tags), customTags...)
 
-	test.Steps, variables, additional_cookies, err = getSteps(monitor.Script.Events)
+	test.Steps, variables, additional_cookies, err = getSteps(ctx, monitor.Script.Events)
 	if err != nil {
 		return test, err
 	}
 
-	test.Config, err = getBrowserConfig(monitor, variables, additional_cookies)
+	test.Config, err = getBrowserConfig(ctx, monitor, variables, additional_cookies)
 	if err != nil {
 		return test, err
 	}
@@ -45,13 +47,13 @@ func ConvertBrowserTest(monitor *dynatrace.SyntheticMonitor, customTags []string
 	return test, nil
 }
 
-func getBrowserConfig(monitor *dynatrace.SyntheticMonitor, variables, additional_cookies []string) (conf datadogV1.SyntheticsBrowserTestConfig, err error) {
+func getBrowserConfig(ctx context.Context, monitor *dynatrace.SyntheticMonitor, variables, additional_cookies []string) (conf datadogV1.SyntheticsBrowserTestConfig, err error) {
 	conf.Request, err = getRequest(monitor)
 	if err != nil {
 		return conf, err
 	}
 	conf.Variables = getBrowserVariables(variables)
-	cookies := strings.Join(append(additional_cookies, getCookies(monitor)...), "\n")
+	cookies := strings.Join(append(additional_cookies, getCookies(ctx, monitor)...), "\n")
 	conf.SetCookie = &cookies
 	return
 }
@@ -65,7 +67,7 @@ func getBrowserVariables(variables []string) (syntheticsVariables []datadogV1.Sy
 	return
 }
 
-func getSteps(events event.Events) (steps []datadogV1.SyntheticsStep, variables []string, cookies []string, err error) {
+func getSteps(ctx context.Context, events event.Events) (steps []datadogV1.SyntheticsStep, variables []string, cookies []string, err error) {
 	foundFirstNavigation := false
 	for _, evt := range events {
 		if evt.GetType() == event.Types.Click {
@@ -86,7 +88,7 @@ func getSteps(events event.Events) (steps []datadogV1.SyntheticsStep, variables 
 			steps = append(steps, browser.ParseJavascriptStep(evt.(*event.Javascript)))
 		} else if evt.GetType() == event.Types.Cookie {
 			for _, c := range evt.(*event.Cookie).Cookies {
-				cookies = append(cookies, cookieToString(c))
+				cookies = append(cookies, cookieToString(ctx, c))
 			}
 		} else {
 			err = common.UnknownStepTypeError(string(evt.GetType()))
@@ -140,14 +142,14 @@ func getHeaders(monitor *dynatrace.SyntheticMonitor) map[string]string {
 	return headers
 }
 
-func getCookies(monitor *dynatrace.SyntheticMonitor) (cookies []string) {
+func getCookies(ctx context.Context, monitor *dynatrace.SyntheticMonitor) (cookies []string) {
 	for _, c := range monitor.Script.Configuration.Cookies {
-		cookies = append(cookies, cookieToString(c))
+		cookies = append(cookies, cookieToString(ctx, c))
 	}
 	return
 }
 
-func cookieToString(c *request.Cookie) string {
+func cookieToString(ctx context.Context, c *request.Cookie) string {
 	var path string = ""
 	if c.Path != nil {
 		path = *c.Path
@@ -158,5 +160,10 @@ func cookieToString(c *request.Cookie) string {
 		Domain: c.Domain,
 		Path:   path,
 	}
+
+	if err := cookie.Valid(); err != nil {
+		logctx.From(ctx).Warn(err)
+	}
+
 	return cookie.String()
 }
