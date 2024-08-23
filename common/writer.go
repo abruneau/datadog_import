@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -27,7 +28,7 @@ func NewFileWriter(filePath string) (*FileWriter, error) {
 }
 
 // Write writes data to the file
-func (fw *FileWriter) Write(obj interface {
+func (fw *FileWriter) Write(ctx context.Context, obj interface {
 	MarshalJSON() ([]byte, error)
 }, fileName string) error {
 	res, err := obj.MarshalJSON()

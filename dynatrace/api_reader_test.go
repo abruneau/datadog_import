@@ -27,7 +27,7 @@ func TestBuildFilter(t *testing.T) {
 			filters: Filters{
 				Tags: []string{"tag1", "tag2"},
 			},
-			expected: "tag:tag1&tag:tag2",
+			expected: "tag=tag1&tag=tag2",
 		},
 		{
 			name: "Location filter",
@@ -83,7 +83,7 @@ func TestBuildFilter(t *testing.T) {
 				CredentialOwner: "owner1",
 				AssignedApps:    "app1",
 			},
-			expected: "managementZone:zone1&tag:tag1&tag:tag2&location:location1&type:BROWSER&enabled:true&credentialId:cred1&credentialOwner:owner1&assignedApps:app1",
+			expected: "managementZone:zone1&tag=tag1&tag=tag2&location:location1&type:BROWSER&enabled:true&credentialId:cred1&credentialOwner:owner1&assignedApps:app1",
 		},
 	}
 
