@@ -75,9 +75,12 @@ func getSteps(ctx context.Context, events event.Events) (steps []datadogV1.Synth
 		} else if evt.GetType() == event.Types.Tap {
 			steps = append(steps, browser.ParseTapStep(evt.(*event.Tap))...)
 		} else if evt.GetType() == event.Types.KeyStrokes {
-			step, variable := browser.ParseKeyStrokesStep(evt.(*event.KeyStrokes))
+			step, variable, additionalStep := browser.ParseKeyStrokesStep(evt.(*event.KeyStrokes))
 			steps = append(steps, step)
 			variables = append(variables, variable)
+			if additionalStep != nil {
+				steps = append(steps, *additionalStep)
+			}
 		} else if evt.GetType() == event.Types.Navigate {
 			if foundFirstNavigation {
 				steps = append(steps, browser.ParseNavigateStep(evt.(*event.Navigate)))
