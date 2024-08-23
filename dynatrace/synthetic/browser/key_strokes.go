@@ -24,7 +24,7 @@ func parseKeyStrokesType(evt *event.KeyStrokes) (params datadog.TextParams, vari
 	return params, variable
 }
 
-func ParseKeyStrokesStep(evt *event.KeyStrokes) (step datadogV1.SyntheticsStep, variable string) {
+func ParseKeyStrokesStep(evt *event.KeyStrokes) (step datadogV1.SyntheticsStep, variable string, additionalStep *datadogV1.SyntheticsStep) {
 	step = *datadogV1.NewSyntheticsStep()
 	step.Name = &evt.Description
 	step.Type = datadogV1.SYNTHETICSSTEPTYPE_TYPE_TEXT.Ptr()
@@ -45,5 +45,24 @@ func ParseKeyStrokesStep(evt *event.KeyStrokes) (step datadogV1.SyntheticsStep, 
 
 	step.Params, variable = parseKeyStrokesType(evt)
 
-	return step, variable
+	return step, variable, parseSimulateReturnKey(evt.SimulateReturnKey)
+}
+
+func parseSimulateReturnKey(SimulateReturnKey bool) (step *datadogV1.SyntheticsStep) {
+	if SimulateReturnKey {
+		step = datadogV1.NewSyntheticsStep()
+		step.Type = datadogV1.SYNTHETICSSTEPTYPE_PRESS_KEY.Ptr()
+		name := "Simulate Return Key"
+		step.Name = &name
+		falseValue := false
+		trueValue := true
+		step.AllowFailure = &falseValue
+		step.IsCritical = &trueValue
+		step.NoScreenshot = &falseValue
+		step.Params = datadog.PressKeyParams{
+			Value: "Enter",
+		}
+		return step
+	}
+	return nil
 }
