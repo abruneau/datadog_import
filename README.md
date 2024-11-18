@@ -10,14 +10,14 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-<h3 align="center">Dynatrace synthetics to Datadog</h3>
+<h3 align="center">Datadog Import</h3>
 
   <p align="center">
-    This is a command line tool to convert Dynatrace synthetics to Datadog synthetics
+    This is a command line tool to convert other resources to Datadog
     <br />
-    <a href="https://github.com/abruneau/dynatrace_to_datadog/issues">Report Bug</a>
+    <a href="https://github.com/abruneau/datadog_import/issues">Report Bug</a>
     ·
-    <a href="https://github.com/abruneau/dynatrace_to_datadog/issues">Request Feature</a>
+    <a href="https://github.com/abruneau/datadog_import/issues">Request Feature</a>
   </p>
 </div>
 
@@ -40,12 +40,12 @@
 ### Brew
 
 ```sh
-brew install abruneau/homebrew-tap/dynatrace_to_datadog
+brew install abruneau/homebrew-tap/datadog_import
 ```
 
 ### From Binary
 
-Get the [latest release](https://github.com/abruneau/dynatrace_to_datadog/releases) for your platform
+Get the [latest release](https://github.com/abruneau/datadog_import/releases) for your platform
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -53,11 +53,11 @@ Get the [latest release](https://github.com/abruneau/dynatrace_to_datadog/releas
 
 1. Clone the repository
    ```sh
-   git clone git@github.com:abruneau/dynatrace_to_datadog.git
+   git clone git@github.com:abruneau/datadog_import.git
    ```
 2. Build
    ```sh
-   go build -o dynatrace_to_datadog
+   go build -o datadog_import
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -69,11 +69,11 @@ Get the [latest release](https://github.com/abruneau/dynatrace_to_datadog/releas
 
 ```sh
 Usage:
-  dynatrace_to_datadog [flags]
+  datadog_import [flags]
 
 Flags:
       --config string   config file (default is ./config.yaml)
-  -h, --help            help for dynatrace_to_datadog
+  -h, --help            help for datadog_import
       --log string      log level (default is info)) (default "info")
 ```
 
@@ -95,7 +95,7 @@ Flags:
 
 ## Roadmap
 
-See the [open issues](https://github.com/abruneau/dynatrace_to_datadog/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/abruneau/datadog_import/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -130,22 +130,22 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Your Name - antonin.bruneau@gmail.com
 
-Project Link: [https://github.com/abruneau/dynatrace_to_datadog](https://github.com/abruneau/dynatrace_to_datadog)
+Project Link: [https://github.com/abruneau/datadog_import](https://github.com/abruneau/datadog_import)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/abruneau/dynatrace_to_datadog.svg?style=for-the-badge
-[contributors-url]: https://github.com/abruneau/dynatrace_to_datadog/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/abruneau/dynatrace_to_datadog.svg?style=for-the-badge
-[forks-url]: https://github.com/abruneau/dynatrace_to_datadog/network/members
-[stars-shield]: https://img.shields.io/github/stars/abruneau/dynatrace_to_datadog.svg?style=for-the-badge
-[stars-url]: https://github.com/abruneau/dynatrace_to_datadog/stargazers
-[issues-shield]: https://img.shields.io/github/issues/abruneau/dynatrace_to_datadog.svg?style=for-the-badge
-[issues-url]: https://github.com/abruneau/dynatrace_to_datadog/issues
-[license-shield]: https://img.shields.io/github/license/abruneau/dynatrace_to_datadog.svg?style=for-the-badge
-[license-url]: https://github.com/abruneau/dynatrace_to_datadog/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/abruneau/datadog_import.svg?style=for-the-badge
+[contributors-url]: https://github.com/abruneau/datadog_import/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/abruneau/datadog_import.svg?style=for-the-badge
+[forks-url]: https://github.com/abruneau/datadog_import/network/members
+[stars-shield]: https://img.shields.io/github/stars/abruneau/datadog_import.svg?style=for-the-badge
+[stars-url]: https://github.com/abruneau/datadog_import/stargazers
+[issues-shield]: https://img.shields.io/github/issues/abruneau/datadog_import.svg?style=for-the-badge
+[issues-url]: https://github.com/abruneau/datadog_import/issues
+[license-shield]: https://img.shields.io/github/license/abruneau/datadog_import.svg?style=for-the-badge
+[license-url]: https://github.com/abruneau/datadog_import/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/antoninbruneau
