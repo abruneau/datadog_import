@@ -2,7 +2,8 @@ package common
 
 import (
 	"context"
-	"dynatrace_to_datadog/logctx"
+	"datadog_import/logctx"
+	"fmt"
 	"os"
 	"path"
 )
@@ -14,7 +15,7 @@ type FileReader struct {
 }
 
 // NewFileReader creates a new FileReader
-func NewFileReader(filePath string) (*FileReader, error) {
+func NewFileReader(ctx context.Context, filePath string) (*FileReader, error) {
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
 		return nil, err
@@ -24,10 +25,14 @@ func NewFileReader(filePath string) (*FileReader, error) {
 
 	if fileInfo.IsDir() {
 		files, err = GetJSONFiles(filePath)
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		files = []string{filePath}
 	}
+
+	logctx.From(ctx).Debug(fmt.Sprintf("%d files found", len(files)))
 
 	return &FileReader{
 		files: files,

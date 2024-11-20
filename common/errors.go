@@ -2,7 +2,7 @@ package common
 
 import (
 	"context"
-	"dynatrace_to_datadog/logctx"
+	"datadog_import/logctx"
 	"errors"
 	"fmt"
 )

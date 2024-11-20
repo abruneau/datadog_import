@@ -35,6 +35,12 @@ dynatrace:
   custom_tags: []
 
 
+# Grafana Configuration
+grafana:
+  # Input directory containing Grafana dashboards definitions
+  input: ""
+
+
 # Datadog Configuration
 datadog:
   # The site of the Datadog intake to send data to.
@@ -43,6 +49,6 @@ datadog:
   api_key: ""
   # The application key used to access Datadog's programatic API
   app_key: ""
+  # Output Directory
+  output: ""
 
-# Output Directory
-output: ""

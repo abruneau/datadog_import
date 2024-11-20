@@ -7,11 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	"dynatrace_to_datadog/common"
-	"dynatrace_to_datadog/converter"
-	"dynatrace_to_datadog/datadog/api"
-	"dynatrace_to_datadog/dynatrace"
-	"dynatrace_to_datadog/logctx"
+	"datadog_import/common"
+	"datadog_import/logctx"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -24,10 +21,10 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "dynatrace_to_datadog",
+	Use:   "datadog_import",
 	Short: "Converts Dynatrace synthetic monitors to Datadog synthetic monitors",
-	Long:  `dynatrace_to_datadog is a tool that converts Dynatrace synthetic monitors to Datadog synthetic monitors.`,
-	Run:   makeConverter,
+	Long:  `datadog_import is a tool that converts Dynatrace synthetic monitors to Datadog synthetic monitors.`,
+	Run:   run,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -77,45 +74,15 @@ func initConfig() {
 	}
 }
 
-func makeConverter(cmd *cobra.Command, args []string) {
-	level, err := logrus.ParseLevel(viper.GetString("log"))
-	if err != nil {
-		logctx.Default.Panic(err)
-	}
-	logrus.SetLevel(level)
+func run(cmd *cobra.Command, args []string) {
 	// logrus.SetFormatter(&logrus.JSONFormatter{})
-	// logrus.SetReportCaller(true)
+	logrus.SetReportCaller(true)
 	logctx.Default = logrus.NewEntry(logrus.StandardLogger())
+	var config ViperConfig
+	err := viper.Unmarshal(&config)
+	common.Check(cmd.Context(), err)
+	config.SetLogLevel()
 	ctx := logctx.New(cmd.Context(), logctx.Default)
-	conv := converter.Converter{}
-	dynatraceConfig := viper.Sub("dynatrace")
-	if dynatraceConfig != nil {
-		var dynaConf dynatrace.Config
-		err := dynatraceConfig.Unmarshal(&dynaConf)
-		common.Check(ctx, err)
-		conv.Reader, err = dynaConf.GetReader()
-		common.Check(ctx, err)
-		conv.Transform = dynaConf.GetTransformer()
-	} else {
-		panic(fmt.Errorf("dynatrace config is nil"))
-	}
-	ddConfig := viper.Sub("datadog")
-	if ddConfig != nil {
-		var datadogConf api.Config
-		err := ddConfig.Unmarshal(&datadogConf)
-		common.Check(ctx, err)
-		conv.Writers = append(conv.Writers, datadogConf.NewDatadogWriter())
-	}
-
-	outputPath := viper.GetString("output")
-	if outputPath != "" {
-		writer, err := common.NewFileWriter(outputPath)
-		common.Check(ctx, err)
-		conv.Writers = append(conv.Writers, writer)
-	}
-
-	if len(conv.Writers) == 0 {
-		panic(fmt.Errorf("no output found"))
-	}
-	conv.Convert(ctx)
+	conv := config.BuildConverter(ctx)
+	conv.Convert()
 }
