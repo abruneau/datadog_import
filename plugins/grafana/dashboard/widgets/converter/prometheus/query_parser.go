@@ -160,6 +160,13 @@ func (q *Query) parseExprTypes(expr parser.Expr) (s Structure, err error) {
 
 		if s.Function == "histogram_quantile" {
 			return handleQuantil(f)
+		} else if s.Function == "per_second" {
+			var arg parser.Expr
+			q.Function, arg, err = extractAggregateFunction(expr)
+			if err != nil {
+				return s, err
+			}
+			return q.parseVectorExpr(*arg.(*parser.VectorSelector))
 		} else {
 
 			for _, arg := range f.Args {
@@ -171,7 +178,6 @@ func (q *Query) parseExprTypes(expr parser.Expr) (s Structure, err error) {
 						return s, err
 					}
 					s.Args = append(s.Args, parsed)
-					q.parseExprTypes(arg)
 				}
 			}
 		}
@@ -227,7 +233,7 @@ func (q *Query) parseExpr() (r shared.Request, err error) {
 	}
 
 	if expr.Type() != parser.ValueTypeVector {
-		log.Fatalf(fmt.Errorf("expression type %s note supported", expr.Type()).Error())
+		log.Fatalf("expression type %s not supported", expr.Type())
 		return r, fmt.Errorf("expression type %s note supported", expr.Type())
 	}
 

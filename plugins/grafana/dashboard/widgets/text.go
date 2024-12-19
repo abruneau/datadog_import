@@ -1,28 +1,27 @@
 package widgets
 
 import (
-	"datadog_import/plugins/grafana/dashboard/types"
 	"fmt"
 
 	"github.com/DataDog/datadog-api-client-go/v2/api/datadogV1"
 	md "github.com/JohannesKaufmann/html-to-markdown"
 )
 
-func newTextDefinition(panel types.Panel) (datadogV1.WidgetDefinition, error) {
+func (pc *PanelConvertor) newTextDefinition() (datadogV1.WidgetDefinition, error) {
 	var markdown string
-	if panel.Title != "" {
-		markdown = fmt.Sprintf("# %s\n", panel.Title)
+	if pc.panel.Title != "" {
+		markdown = fmt.Sprintf("# %s\n", pc.panel.Title)
 	}
 	var mode, content string
 
-	mode = panel.Mode
-	if panel.Mode == "" {
-		mode = panel.Options.Mode
+	mode = pc.panel.Mode
+	if pc.panel.Mode == "" {
+		mode = pc.panel.Options.Mode
 	}
 
-	content = panel.Content
-	if panel.Content == "" {
-		content = panel.Options.Content
+	content = pc.panel.Content
+	if pc.panel.Content == "" {
+		content = pc.panel.Options.Content
 	}
 
 	if mode == "markdown" {

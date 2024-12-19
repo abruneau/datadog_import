@@ -45,11 +45,9 @@ func (c *dashboardConvertor) build() *datadogV1.Dashboard {
 
 func (c *dashboardConvertor) extractTemplateVariables() {
 	for _, v := range c.graf.Templating.List {
-		if _, ok := v.Query.(string); !ok {
-			continue
-		}
-		if v.Type == "datasource" {
-			c.datasource = v.Query.(string)
+		query, ok := v.Query.(string)
+		if v.Type == "datasource" && ok {
+			c.datasource = query
 		} else if v.Type == "query" {
 			tv := templatevariable.GetTemplateVariable(c.datasource, v)
 			if tv != nil {
@@ -60,7 +58,9 @@ func (c *dashboardConvertor) extractTemplateVariables() {
 }
 
 func (c *dashboardConvertor) processPanel(panel types.Panel) *datadogV1.Widget {
-	widget, err := widgets.ConvertWidget(c.datasource, panel)
+	panelConvertor := widgets.NewPanelConvertor(c.ctx, c.datasource, panel)
+	panelConvertor.Convert()
+	widget, err := panelConvertor.Convert()
 	if err != nil {
 		logctx.From(c.ctx).WithField("widget", panel.Title).Warn(err)
 		return nil

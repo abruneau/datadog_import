@@ -1,9 +1,6 @@
 package widgets
 
 import (
-	"datadog_import/plugins/grafana/dashboard/types"
-	"datadog_import/plugins/grafana/dashboard/widgets/converter"
-
 	"github.com/DataDog/datadog-api-client-go/v2/api/datadogV1"
 )
 
@@ -13,43 +10,24 @@ var displayMap = map[string]datadogV1.WidgetDisplayType{
 	"points": datadogV1.WIDGETDISPLAYTYPE_LINE,
 }
 
-func newTimeseriesDefinition(source string, panel types.Panel) (datadogV1.WidgetDefinition, error) {
-	request, err := newTimeseriesRequest(source, panel)
+func (pc *PanelConvertor) newTimeseriesDefinition() (datadogV1.WidgetDefinition, error) {
+	var widgetRequest = datadogV1.NewTimeseriesWidgetRequest()
+	err := pc.newRequest(widgetRequest, false, true)
+
 	if err != nil {
 		return datadogV1.WidgetDefinition{}, err
 	}
-	tsDefinition := datadogV1.NewTimeseriesWidgetDefinition(request, datadogV1.TIMESERIESWIDGETDEFINITIONTYPE_TIMESERIES)
-	tsDefinition.SetTitle(panel.Title)
-	tsDefinition.SetTitleSize("16")
 
-	return datadogV1.TimeseriesWidgetDefinitionAsWidgetDefinition(tsDefinition), nil
-}
-
-func newTimeseriesRequest(source string, panel types.Panel) ([]datadogV1.TimeseriesWidgetRequest, error) {
-	var widgetRequest *datadogV1.TimeseriesWidgetRequest
-	var err error
-
-	if source == "" {
-		source = panel.Datasource.Type
-	}
-
-	con, err := converter.NewConverter(source)
-	if err != nil {
-		return nil, err
-	}
-
-	widgetRequest, err = con.NewTimeseriesWidgetRequest(panel)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if panel.Type == "barchart" {
+	if pc.panel.Type == "barchart" {
 		widgetRequest.SetDisplayType(datadogV1.WIDGETDISPLAYTYPE_BARS)
-	} else if panel.FieldConfig.Defaults.Custom.DrawStyle != "" {
-		widgetRequest.SetDisplayType(displayMap[panel.FieldConfig.Defaults.Custom.DrawStyle])
+	} else if pc.panel.FieldConfig.Defaults.Custom.DrawStyle != "" {
+		widgetRequest.SetDisplayType(displayMap[pc.panel.FieldConfig.Defaults.Custom.DrawStyle])
 	}
 	widgetRequest.SetResponseFormat(datadogV1.FORMULAANDFUNCTIONRESPONSEFORMAT_TIMESERIES)
 
-	return []datadogV1.TimeseriesWidgetRequest{*widgetRequest}, nil
+	tsDefinition := datadogV1.NewTimeseriesWidgetDefinition([]datadogV1.TimeseriesWidgetRequest{*widgetRequest}, datadogV1.TIMESERIESWIDGETDEFINITIONTYPE_TIMESERIES)
+	tsDefinition.SetTitle(pc.panel.Title)
+	tsDefinition.SetTitleSize("16")
+
+	return datadogV1.TimeseriesWidgetDefinitionAsWidgetDefinition(tsDefinition), nil
 }

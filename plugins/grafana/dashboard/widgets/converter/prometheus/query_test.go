@@ -72,6 +72,24 @@ var tests = []struct {
 			},
 		},
 	},
+	{
+		expr:  "irate(jvm_classes_unloaded_classes_total{kubernetes_namespace=\"$environment\", app=\"$application\", kubernetes_pod_name=~\"$instance\"}[5m])",
+		refId: "A",
+		request: shared.Request{
+			Formulas: []string{"A"},
+			Queries: []struct {
+				Name        string
+				Query       string
+				Aggregation datadogV1.FormulaAndFunctionMetricAggregation
+			}{
+				{
+					Name:        "A",
+					Query:       "avg:jvm_classes_unloaded_classes_total{kubernetes_namespace:$environment.value,app:$application.value,kubernetes_pod_name:$instance.value}.as_rate()",
+					Aggregation: datadogV1.FORMULAANDFUNCTIONMETRICAGGREGATION_AVG,
+				},
+			},
+		},
+	},
 }
 
 func TestNewQuery(t *testing.T) {

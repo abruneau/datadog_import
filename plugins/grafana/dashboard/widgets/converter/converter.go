@@ -38,6 +38,10 @@ func NewConverter(source string) (*Converter, error) {
 	return conv, nil
 }
 
+func (c *Converter) Parse(panel types.Panel, aggregate bool, groupBy bool) (queries []datadogV1.FormulaAndFunctionQueryDefinition, formulas []datadogV1.WidgetFormula, err error) {
+	return c.parseTargets(panel, aggregate, groupBy)
+}
+
 func (c *Converter) parseTargets(panel types.Panel, aggregate bool, groupBy bool) (queries []datadogV1.FormulaAndFunctionQueryDefinition, formulas []datadogV1.WidgetFormula, err error) {
 	queries = []datadogV1.FormulaAndFunctionQueryDefinition{}
 	formulas = []datadogV1.WidgetFormula{}
@@ -67,28 +71,4 @@ func (c *Converter) parseTargets(panel types.Panel, aggregate bool, groupBy bool
 	}
 
 	return queries, formulas, nil
-}
-
-func (c *Converter) NewTimeseriesWidgetRequest(panel types.Panel) (*datadogV1.TimeseriesWidgetRequest, error) {
-	var err error
-	widgetRequest := datadogV1.NewTimeseriesWidgetRequest()
-	widgetRequest.Queries, widgetRequest.Formulas, err = c.parseTargets(panel, false, true)
-
-	return widgetRequest, err
-}
-
-func (c *Converter) NewQueryValueWidgetRequest(panel types.Panel) (*datadogV1.QueryValueWidgetRequest, error) {
-	var err error
-	widgetRequest := datadogV1.NewQueryValueWidgetRequest()
-	widgetRequest.Queries, widgetRequest.Formulas, err = c.parseTargets(panel, true, false)
-
-	return widgetRequest, err
-}
-
-func (c *Converter) NewSunburstWidgetRequest(panel types.Panel) (*datadogV1.SunburstWidgetRequest, error) {
-	var err error
-	widgetRequest := datadogV1.NewSunburstWidgetRequest()
-	widgetRequest.Queries, widgetRequest.Formulas, err = c.parseTargets(panel, true, true)
-
-	return widgetRequest, err
 }

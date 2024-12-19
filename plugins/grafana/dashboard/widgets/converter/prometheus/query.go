@@ -31,10 +31,11 @@ type Query struct {
 }
 
 type parsedExpr struct {
-	agg     parser.ItemType
-	groups  []string
-	metric  string
-	filters []*labels.Matcher
+	agg      parser.ItemType
+	groups   []string
+	metric   string
+	filters  []*labels.Matcher
+	Function datadog.FormulaAndFunctionMetricFunction
 }
 
 func NewQuery(target map[string]interface{}, groupBy bool) (shared.Request, error) {
@@ -90,6 +91,9 @@ func (q *Query) Aggregator() (datadogV1.FormulaAndFunctionMetricAggregation, err
 }
 
 func (q *Query) function() datadog.FormulaAndFunctionMetricFunction {
+	if q.Function != "" {
+		return q.Function
+	}
 	return "as_count()"
 }
 
