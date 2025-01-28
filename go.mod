@@ -1,8 +1,6 @@
 module datadog_import
 
-go 1.23.0
-
-toolchain go1.23.2
+go 1.23.2
 
 require (
 	github.com/dynatrace-oss/terraform-provider-dynatrace v1.58.0
