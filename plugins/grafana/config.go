@@ -11,14 +11,21 @@ import (
 )
 
 type Config struct {
-	Input string `mapstructure:"input" doc:"Input directory containing Grafana dashboards definitions"`
+	Input   string    `mapstructure:"input" doc:"Input directory containing Grafana dashboards definitions"`
+	API     APIConfig `mapstructure:"api" doc:"API configuration"`
+	Filters Filters   `mapstructure:"filters" doc:"Filters to apply to the list of dashboards"`
 }
 
 func (conf *Config) GetReader(ctx context.Context) (converter.Reader, error) {
 	if conf.Input != "" {
 		return common.NewFileReader(ctx, conf.Input)
 	}
-	// return nil, nil
+	if conf.API.Host != "" {
+		return conf.NewAPIReader()
+	}
+	if conf.Input == "" && conf.API.Host == "" {
+		return nil, nil
+	}
 	jsonConf, _ := json.MarshalIndent(conf, "", "  ")
 	return nil, fmt.Errorf("invalid Grafana configuration:\n%s", jsonConf)
 }
