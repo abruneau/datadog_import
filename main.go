@@ -4,7 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package main
 
 import (
-	"dynatrace_to_datadog/cmd"
+	"datadog_import/cmd"
 	"fmt"
 	"log"
 	"os"

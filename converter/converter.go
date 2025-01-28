@@ -2,21 +2,35 @@ package converter
 
 import (
 	"context"
-	"dynatrace_to_datadog/common"
-	"dynatrace_to_datadog/logctx"
+	"datadog_import/common"
+	"datadog_import/logctx"
 	"errors"
 	"reflect"
 
 	"github.com/sirupsen/logrus"
 )
 
-type Converter struct {
-	Reader    Reader
-	Transform Transformer
-	Writers   []Writer
+type Converter interface {
+	Convert()
 }
 
-func (c *Converter) Convert(ctx context.Context) {
+type converter struct {
+	ctx context.Context
+	r   Reader
+	t   Transformer
+	ws  []Writer
+}
+
+func NewConverter(ctx context.Context, reader Reader, transform Transformer, writers []Writer) Converter {
+	return &converter{
+		ctx: ctx,
+		r:   reader,
+		t:   transform,
+		ws:  writers,
+	}
+}
+
+func (c *converter) Convert() {
 	read := 0
 	readError := 0
 	transformed := 0
@@ -24,10 +38,10 @@ func (c *Converter) Convert(ctx context.Context) {
 	written := 0
 	writeError := 0
 
-	logger := logctx.From(ctx)
+	logger := logctx.From(c.ctx)
 	for {
 		// Read
-		id, name, data, err := c.Reader.Read(ctx)
+		id, name, data, err := c.r.Read(c.ctx)
 		contextLogger := logger.WithFields(logrus.Fields{
 			"Object":   name,
 			"OriginId": id,
@@ -36,7 +50,7 @@ func (c *Converter) Convert(ctx context.Context) {
 			if errors.Is(err, common.ErrNoMoreData) {
 				break
 			}
-			contextLogger.WithField("Reader", reflect.TypeOf(c.Reader)).Error(err)
+			contextLogger.WithField("Reader", reflect.TypeOf(c.r)).Error(err)
 			readError += 1
 			continue
 		}
@@ -44,9 +58,9 @@ func (c *Converter) Convert(ctx context.Context) {
 
 		// Convert
 		contextLogger.Debug("converting object")
-		newObj, err := c.Transform(logctx.New(ctx, contextLogger), data)
+		newObj, err := c.t(logctx.New(c.ctx, contextLogger), data)
 		if err != nil {
-			contextLogger.WithField("Transform", reflect.TypeOf(c.Transform)).Error(err)
+			contextLogger.WithField("Transform", reflect.TypeOf(c.t)).Error(err)
 			transformError += 1
 			continue
 		}
@@ -54,8 +68,8 @@ func (c *Converter) Convert(ctx context.Context) {
 
 		// Write
 		contextLogger.Debug("writing object")
-		for _, writer := range c.Writers {
-			err = writer.Write(logctx.New(ctx, contextLogger), newObj, name)
+		for _, writer := range c.ws {
+			err = writer.Write(logctx.New(c.ctx, contextLogger), newObj, name)
 			if err != nil {
 				contextLogger.WithField("Writer", reflect.TypeOf(writer)).Error(err)
 				writeError += 1
