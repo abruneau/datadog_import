@@ -69,6 +69,7 @@ func buildFilter(filters Filters) string {
 		res += "assignedApps:" + filters.AssignedApps + "&"
 	}
 
+	// Remove the last "&"
 	if res != "" {
 		res = res[:len(res)-1]
 	}
