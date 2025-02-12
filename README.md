@@ -81,15 +81,10 @@ Flags:
 
 ## Compatibility
 
-| Source  | Support |
-| ------- | ------- |
-| browser | ✅      |
-| api     | ✅      |
-
-### API Tests Limitations
-
-- Pre and post scripts don't have equivalent in Datadog. The details of those scripts will be reported in the message section of the test.
-- Certificate Expiry Date Constraint is not supported in HTTP tests. It should be implemented in SSL tests
+| Source    | Doc                       |
+| --------- | ------------------------- |
+| Grafana   | [doc](./doc/grafana.md)   |
+| Dynatrace | [doc](./doc/dynatrace.md) |
 
 <!-- ROADMAP -->
 
