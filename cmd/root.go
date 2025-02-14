@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	"datadog_import/common"
-	"datadog_import/logctx"
+	"datadog_import/internal/common"
+	"datadog_import/internal/logctx"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

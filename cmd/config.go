@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"context"
-	"datadog_import/common"
-	"datadog_import/converter"
-	"datadog_import/logctx"
-	"datadog_import/plugins"
-	"datadog_import/plugins/datadog"
-	"datadog_import/plugins/dynatrace"
-	"datadog_import/plugins/grafana"
+	"datadog_import/internal/common"
+	"datadog_import/internal/converter"
+	"datadog_import/internal/logctx"
+	"datadog_import/internal/plugins"
+	"datadog_import/internal/plugins/datadog"
+	"datadog_import/internal/plugins/dynatrace"
+	"datadog_import/internal/plugins/grafana"
 
 	"github.com/sirupsen/logrus"
 )
