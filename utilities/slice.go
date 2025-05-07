@@ -22,7 +22,7 @@ func Filter[T any](s []T, f func(T) bool) []T {
 
 func Unique[T comparable](s []T) []T {
 	inResult := make(map[T]bool)
-	var result []T
+	result := make([]T, 0)
 	for _, str := range s {
 		if _, ok := inResult[str]; !ok {
 			inResult[str] = true
