@@ -17,6 +17,7 @@ import (
 
 var (
 	cfgFile, logLevel string
+	Version           = "dev"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -30,6 +31,13 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	// Check for version flag before executing the command logic
+	for _, arg := range os.Args[1:] {
+		if arg == "--version" || arg == "-v" {
+			fmt.Println("datadog_import version:", Version)
+			os.Exit(0)
+		}
+	}
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
@@ -45,6 +53,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&logLevel, "log", "info", "log level (default is info))")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ./config.yaml)")
+	rootCmd.PersistentFlags().BoolP("version", "v", false, "Print the version and exit")
 
 	viper.BindPFlag("log", rootCmd.PersistentFlags().Lookup("log"))
 }

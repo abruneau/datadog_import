@@ -42,9 +42,9 @@ func CreateSubDirectories(rootPath, tree string) (string, error) {
 	_, err := os.Stat(outputDirectory)
 	if errors.Is(err, os.ErrNotExist) {
 		return outputDirectory, os.MkdirAll(outputDirectory, os.ModePerm)
-	} else {
-		return outputDirectory, err
 	}
+	return outputDirectory, err
+
 }
 
 func WriteFileToDisk(filePath string, data []byte) error {

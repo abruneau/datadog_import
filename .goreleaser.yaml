@@ -1,3 +1,4 @@
+version: 2
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
 before:
@@ -13,9 +14,12 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s -w -X 'datadog_import/cmd.Version={{.Version}}'
 
 archives:
-  - format: tar.gz
+  - formats:
+      - tar.gz
     # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       {{ .ProjectName }}_
@@ -26,24 +30,24 @@ archives:
       {{- if .Arm }}v{{ .Arm }}{{ end }}
     # use zip for windows archives
     format_overrides:
-    - goos: windows
-      format: zip
+      - goos: windows
+        formats:
+          - zip
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  version_template: "{{ incpatch .Version }}-next"
 changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
+      - "^docs:"
+      - "^test:"
 release:
   prerelease: auto
 
 brews:
-  -
-    # Name of the recipe
+  - # Name of the recipe
     #
     # Default: ProjectName
     # Templates: allowed
