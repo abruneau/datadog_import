@@ -40,7 +40,7 @@
 ### Brew
 
 ```sh
-brew install abruneau/homebrew-tap/datadog_import
+brew install --cask abruneau/homebrew-tap/datadog_import
 ```
 
 ### From Binary
