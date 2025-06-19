@@ -99,6 +99,8 @@ func (q *Query) function() datadog.FormulaAndFunctionMetricFunction {
 
 func cleanupFilterValues(value string) []string {
 	value = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(value, "..", "*"), ".*", "*"), "//", "/")
+	value = strings.ReplaceAll(value, "**", "*")
+	value = strings.ReplaceAll(value, " ", "_")
 	values := strings.Split(value, "|")
 
 	for i, v := range values {

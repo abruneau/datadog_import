@@ -21,6 +21,13 @@ func (s *Structure) transvers(refId string, level int) (f string, q []struct {
 		return
 	}
 
+	if s.Agg == "" && len(s.Args) == 1 {
+		f1, q1, _ := s.Args[0].transvers(refId, level+1)
+		f = fmt.Sprintf("(%s)", f1)
+		q = append(q, q1...)
+		return
+	}
+
 	if s.Number != "" {
 		f = s.Number
 	}

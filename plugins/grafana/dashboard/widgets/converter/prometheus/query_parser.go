@@ -5,7 +5,6 @@ import (
 	"datadog_import/plugins/grafana/dashboard/widgets/shared"
 	"datadog_import/utilities"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -58,6 +57,10 @@ func extractAggregateFunction(expr parser.Expr) (datadog.FormulaAndFunctionMetri
 }
 
 func parseMetric(expr parser.Expr) (name string, filters []string, err error) {
+	parens, ok := expr.(*parser.ParenExpr)
+	if ok {
+		return parseMetric(parens.Expr)
+	}
 	vec, ok := expr.(*parser.VectorSelector)
 	if ok {
 		filters, err = filter(vec.LabelMatchers)
@@ -138,6 +141,16 @@ func (q *Query) parseExprTypes(expr parser.Expr) (s Structure, err error) {
 	num, ok := expr.(*parser.NumberLiteral)
 	if ok {
 		s.Number = num.String()
+		return s, nil
+	}
+
+	parens, ok := expr.(*parser.ParenExpr)
+	if ok {
+		parsed, err := q.parseExprTypes(parens.Expr)
+		if err != nil {
+			return s, err
+		}
+		s.Args = append(s.Args, parsed)
 		return s, nil
 	}
 
@@ -233,7 +246,7 @@ func (q *Query) parseExpr() (r shared.Request, err error) {
 	}
 
 	if expr.Type() != parser.ValueTypeVector {
-		log.Fatalf("expression type %s not supported", expr.Type())
+		// log.Fatalf("expression type %s not supported", expr.Type())
 		return r, fmt.Errorf("expression type %s note supported", expr.Type())
 	}
 
