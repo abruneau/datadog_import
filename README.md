@@ -67,14 +67,42 @@ Get the [latest release](https://github.com/abruneau/datadog_import/releases) fo
 - Create a config file in `yaml`. You can look at [config.yaml.example](./config.yaml.example) for guidance.
 - run the cli
 
-```sh
+### Root command
+
+```
 Usage:
   datadog_import [flags]
+  datadog_import [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  grafana     Convert Grafana queries to Datadog queries
+  help        Help about any command
 
 Flags:
       --config string   config file (default is ./config.yaml)
   -h, --help            help for datadog_import
       --log string      log level (default is info)) (default "info")
+  -v, --version         Print the version and exit
+```
+
+### Grafana command
+
+```
+Convert queries from various Grafana datasources (Azure Monitor, CloudWatch, Stackdriver, Prometheus, Loki) to Datadog queries.
+
+Usage:
+  datadog_import grafana [flags]
+
+Flags:
+  -h, --help                help for grafana
+  -q, --query stringArray   Queries to convert (can be specified multiple times)
+  -t, --type string         Query type (grafana-azure-monitor-datasource, cloudwatch, stackdriver, prometheus, loki)
+
+Global Flags:
+      --config string   config file (default is ./config.yaml)
+      --log string      log level (default is info)) (default "info")
+  -v, --version         Print the version and exit
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

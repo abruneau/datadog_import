@@ -8,6 +8,7 @@ import (
 	"datadog_import/plugins/grafana/dashboard/widgets/converter/stackdriver"
 	"datadog_import/plugins/grafana/dashboard/widgets/shared"
 	"fmt"
+	"strings"
 
 	"github.com/DataDog/datadog-api-client-go/v2/api/datadogV1"
 )
@@ -32,7 +33,11 @@ func NewConverter(source string) (*Converter, error) {
 	conv := &Converter{source: source}
 	conv.newQuery, ok = sourceMapper[source]
 	if !ok {
-		return nil, fmt.Errorf("unknown datasource %s", source)
+		keys := make([]string, 0, len(sourceMapper))
+		for k := range sourceMapper {
+			keys = append(keys, k)
+		}
+		return nil, fmt.Errorf("unknown datasource %s, must be one of: %s", source, strings.Join(keys, ", "))
 	}
 
 	return conv, nil
